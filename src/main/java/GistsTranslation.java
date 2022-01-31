@@ -1,9 +1,5 @@
-import Utils.Utils;
-import model.GistEntity;
-
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,48 +7,32 @@ import java.util.regex.Pattern;
 public class GistsTranslation {
 
     private static final String SYNTAX_HIGHLIGHTER = "```";
+    private static String rawID = null;
 
-    static void translateGistsOfABlogPost(String filePath, String targetLanguage) {
-        try {
-            String markdownText = Utils.readFile(filePath);
-            Pattern p = Pattern.compile("\\{\\{< *gist (.+?) (.+?) \"(.+?)\" *>}}");
-            Matcher m = p.matcher(markdownText);
+    static String translateGistsOfABlogPost(String textString, String markdownText, String targetLanguage) {
+        Pattern p = Pattern.compile("\\{\\{< *gist (.+?) (.+?) \"(.+?)\" *>}}");
+        Matcher m = p.matcher(textString);
 
-            List<GistEntity> gistEntities = new ArrayList<GistEntity>();
-
-            while (m.find()) {
-                GistEntity aGistEntity = new GistEntity();
-                aGistEntity.gistShortcode = m.group(0);
-                aGistEntity.userName = m.group(1);
-                aGistEntity.gistID = m.group(2);
-                aGistEntity.filename = m.group(3);
-                gistEntities.add(aGistEntity);
-            }
+        if (m.find()) {
+            String gistShortcode = m.group(0);
+            String userName = m.group(1);
+            String gistID = m.group(2);
+            String filename = m.group(3);
 
             // Since all gists of a blog post have the same RawID, fetch RawID using any Gist username and gistID.
-            String rawID = "";
-            if(gistEntities.size() > 0) {
-                rawID = getRawID(gistEntities.get(0).userName, gistEntities.get(0).gistID);
+            if (rawID == null) {
+                rawID = getRawID(userName, gistID);
             }
 
-            for(GistEntity gistEntity : gistEntities) {
-                String gistContent = GistsTranslation.getGistContent(gistEntity.userName,
-                        gistEntity.gistID, rawID, gistEntity.filename);
-                String translatedGist = GistsTranslation.translateGistComments(gistContent, targetLanguage);
-                // Enclose in code highlighter syntax.
-                StringBuilder codeSample = new StringBuilder(SYNTAX_HIGHLIGHTER);
-                codeSample.append("\n");
-                codeSample.append(translatedGist);
-                codeSample.append("\n");
-                codeSample.append(SYNTAX_HIGHLIGHTER);
+            String gistContent = getGistContent(userName, gistID, rawID, filename);
+            String translatedGist = translateGistComments(gistContent, targetLanguage);
 
-                markdownText = markdownText.replace(gistEntity.gistShortcode ,codeSample.toString());
-                // Replace content of the file with updated markup text.
-                FixIssuesInExportedContent.overwriteFileContent(filePath, markdownText);
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // Enclose in code highlighter syntax.
+            String codeSample = SYNTAX_HIGHLIGHTER + "\n" + translatedGist + "\n" + SYNTAX_HIGHLIGHTER;
+            markdownText = markdownText.replace(gistShortcode, codeSample);
         }
+
+        return markdownText;
     }
 
     static String getGistContent(String userName, String gistID, String rawID, String filename) {

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GoogleTranslationAPI {
+
+    static String KEY_FILE_PATH = "/Users/muhammadsohailismail/Documents/Aspose/Hugo/rugged-shuttle-339315-77b182de5e7c.json";
     public static ArrayList<String> translateArrayList(ArrayList<String> commentsToTranslate, String targetLanguage) {
         ArrayList<String> translatedComments = new ArrayList<>();
 
@@ -18,7 +20,7 @@ public class GoogleTranslationAPI {
                     .setCredentials(
                             ServiceAccountCredentials
                                     .fromStream(new FileInputStream(
-                                            "C:\\Hugo\\rugged-shuttle-339315-77b182de5e7c.json")))
+                                            KEY_FILE_PATH)))
                     .build().getService();
 
             List<Translation> translations = translate.translate(commentsToTranslate,
@@ -48,7 +50,7 @@ public class GoogleTranslationAPI {
                     .setCredentials(
                             ServiceAccountCredentials
                                     .fromStream(new FileInputStream(
-                                            "C:\\Hugo\\rugged-shuttle-339315-77b182de5e7c.json")))
+                                            KEY_FILE_PATH)))
                     .build().getService();
 
             Translation translation = translate.translate(textToTranslate,

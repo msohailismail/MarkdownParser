@@ -11,7 +11,8 @@ public class Main {
         //String filePath = "content\\Conholdate.Total\\2022-01-05-crop-and-resize-jpeg-images-using-csharp\\index.zh.md";
         //GistsTranslation.translateGistsOfABlogPost(filePath, "zh");
 
-        String filePath = "content\\Conholdate.Total\\2022-01-05-crop-and-resize-jpeg-images-using-csharp\\index.md";
+        //String filePath = "content/Conholdate.Total/2021-05-11-search-for-a-word-in-pdf-using-java/index.md";
+        String filePath = "content/Conholdate.Total/2022-01-05-crop-and-resize-jpeg-images-using-csharp/index.md";
         BlogPostParsing.translateABlogPost(filePath, "fr");
     }
 
